@@ -1,48 +1,124 @@
-#include <ESP8266WiFi.h>
 #include <Adafruit_NeoPixel.h>
- 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(8, D2, NEO_GRB + NEO_KHZ800);
+#include <Arduino.h>
 
-void disableWifi() {
-  WiFi.persistent(false);
-  WiFi.mode(WIFI_OFF);
-  WiFi.forceSleepBegin();
-  delay(1);
+#define P0 0
+#define P2 2
+
+#define EYE_LEFT 0
+#define EYE_RIGHT 1
+
+#define PIXEL_PER_EYE 4
+
+#define ANIM_STEP_DELAY 65
+#define EYES_CLOSED_DURATION 5 * ANIM_STEP_DELAY
+
+#define MIN_SLEEP_BETWEEN_ANIM 2
+#define MAX_SLEEP_BETWEEN_ANIM 20
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(8, P0, NEO_GRB + NEO_KHZ800);
+uint32_t eyeColor = pixels.Color(64, 0, 0);
+uint32_t ledOff = pixels.Color(0, 0, 0);
+
+void seedRNG() {
+    pinMode(P2, INPUT);
+    randomSeed(analogRead(P2));
+}
+
+void openEyes() {
+    uint8_t startIndexLeft = PIXEL_PER_EYE - 1;
+    uint8_t startIndexRight = (PIXEL_PER_EYE * 2) - 1;
+
+    pixels.setPixelColor(startIndexLeft, eyeColor);
+    pixels.setPixelColor(startIndexRight, eyeColor);
+    pixels.show();
+    delay(ANIM_STEP_DELAY);
+
+    pixels.setPixelColor(startIndexLeft - 1, eyeColor);
+    pixels.setPixelColor(startIndexLeft - 2, eyeColor);
+    pixels.setPixelColor(startIndexRight - 1, eyeColor);
+    pixels.setPixelColor(startIndexRight - 2, eyeColor);
+    pixels.show();
+    delay(ANIM_STEP_DELAY);
+
+    pixels.setPixelColor(startIndexLeft - 3, eyeColor);
+    pixels.setPixelColor(startIndexRight - 3, eyeColor);
+    pixels.show();
+}
+
+void closeEye(uint8_t eye) {
+    if (eye > EYE_RIGHT) {
+        return;
+    }
+
+    uint8_t startIndex = eye * PIXEL_PER_EYE;
+
+    pixels.setPixelColor(startIndex, ledOff);
+    pixels.show();
+    delay(ANIM_STEP_DELAY);
+
+    pixels.setPixelColor(startIndex + 1, ledOff);
+    pixels.setPixelColor(startIndex + 2, ledOff);
+    pixels.show();
+    delay(ANIM_STEP_DELAY);
+
+    pixels.setPixelColor(startIndex + 3, ledOff);
+    pixels.show();
+}
+
+void closeBothEyes() {
+    uint8_t startIndexLeft = EYE_LEFT * PIXEL_PER_EYE;
+    uint8_t startIndexRight = EYE_RIGHT * PIXEL_PER_EYE;
+
+    pixels.setPixelColor(startIndexLeft, ledOff);
+    pixels.setPixelColor(startIndexRight, ledOff);
+    pixels.show();
+    delay(ANIM_STEP_DELAY);
+
+    pixels.setPixelColor(startIndexLeft + 1, ledOff);
+    pixels.setPixelColor(startIndexLeft + 2, ledOff);
+    pixels.setPixelColor(startIndexRight + 1, ledOff);
+    pixels.setPixelColor(startIndexRight + 2, ledOff);
+    pixels.show();
+    delay(ANIM_STEP_DELAY);
+
+    pixels.setPixelColor(startIndexLeft + 3, ledOff);
+    pixels.setPixelColor(startIndexRight + 3, ledOff);
+    pixels.show();
+}
+
+void closeRandomEye() {
+    uint8_t eye = random(EYE_RIGHT + 2);
+
+    if (eye > EYE_RIGHT) {
+        closeBothEyes();
+    } else {
+        closeEye(eye);
+    }
+}
+
+void doRandomSleep() {
+    double sleepAmount = random(MIN_SLEEP_BETWEEN_ANIM, MAX_SLEEP_BETWEEN_ANIM) * 1000;
+    delay(sleepAmount);
 }
 
 void setup() {
     /* Setup serial for debug */
     Serial.begin(115200);
 
-    disableWifi();
-
     pixels.begin();
+
+    seedRNG();
+    pixels.clear();
+    pixels.setBrightness(64);
+    pixels.show();
+
+    openEyes();
 }
 
 void loop() {
-    Serial.print("Low");
-    pixels.setPixelColor(0, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(1, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(2, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(3, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(4, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(5, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(6, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(7, pixels.Color(0, 0, 0));
-    pixels.show();
+    closeRandomEye();
+    delay(EYES_CLOSED_DURATION);
+    openEyes();
 
-    delay(2000);
-
-    Serial.print("High");
-    pixels.setPixelColor(0, pixels.Color(255, 0, 0));
-    pixels.setPixelColor(1, pixels.Color(255, 0, 0));
-    pixels.setPixelColor(2, pixels.Color(255, 0, 0));
-    pixels.setPixelColor(3, pixels.Color(255, 0, 0));
-    pixels.setPixelColor(4, pixels.Color(255, 0, 0));
-    pixels.setPixelColor(5, pixels.Color(255, 0, 0));
-    pixels.setPixelColor(6, pixels.Color(255, 0, 0));
-    pixels.setPixelColor(7, pixels.Color(255, 0, 0));
-    pixels.show();
-
-    ESP.deepSleep(10e6, RF_DISABLED);
+    doRandomSleep();
 }

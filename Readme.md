@@ -6,8 +6,8 @@ The eyes will be lit red and blink slowly in random intervals.
 ## Hardware
 
 This project has very simple hardware requirements.
-It is based on a d1_mini esp8266 board and 4 neopixel style leds per eye.
-It can be powered via usb or 3x AA batteries.
+It is based on a digispark attiny85 board and 4 neopixel style leds per eye.
+It can be powered via usb batteries.
 
 ## Build
 
