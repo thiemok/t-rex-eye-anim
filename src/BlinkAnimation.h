@@ -7,9 +7,7 @@
 class BlinkAnimation {
 
     public:
-        BlinkAnimation(
-            Adafruit_NeoPixel* pixels
-        );
+        BlinkAnimation(Adafruit_NeoPixel* pixels);
 
         void setup();
         void loop();
