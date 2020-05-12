@@ -19,14 +19,14 @@
     #define INITIAL_BRIGHTNESS_LOWER_BOUND 64
 #endif 
 
-PartyAnimation::PartyAnimation(Adafruit_NeoPixel* pixels) {
-    this->pixels = pixels;
+PartyAnimation::PartyAnimation(Adafruit_NeoPixel* p) {
+    pixels = p;
 
-    this->animStepDelay = DEFAULT_ANIM_STEP_DELAY;
-    this->minStrobes = DEFAULT_ANIM_MIN_STROBES;
-    this->maxStrobes = DEFAULT_ANIM_MAX_STROBES;
-    this->minSleepBetweenStrobes = DEFAULT_MIN_SLEEP_BETWEEN_ANIM;
-    this->maxSleepBetweenStrobes = DEFAULT_MAX_SLEEP_BETWEEN_ANIM;
+    animStepDelay = DEFAULT_ANIM_STEP_DELAY;
+    minStrobes = DEFAULT_ANIM_MIN_STROBES;
+    maxStrobes = DEFAULT_ANIM_MAX_STROBES;
+    minSleepBetweenStrobes = DEFAULT_MIN_SLEEP_BETWEEN_ANIM;
+    maxSleepBetweenStrobes = DEFAULT_MAX_SLEEP_BETWEEN_ANIM;
 }
 
 void PartyAnimation::setup() {
@@ -59,53 +59,53 @@ for (uint8_t i = 0; i < steps; i++) {
 doRandomSleep();
 }
 
-PartyAnimation* PartyAnimation::setNeoPixel(Adafruit_NeoPixel* pixels) {
-    this->pixels = pixels;
+PartyAnimation* PartyAnimation::setNeoPixel(Adafruit_NeoPixel* p) {
+    pixels = p;
     return this;
 }
 
 uint8_t PartyAnimation::getStepDelay() {
-    return this->animStepDelay;
+    return animStepDelay;
 }
 
 PartyAnimation* PartyAnimation::setStepDelay(uint8_t delay) {
-    this->animStepDelay = delay;
+    animStepDelay = delay;
     return this;
 }
 
 uint8_t PartyAnimation::getMinStrobes() {
-    return this->minStrobes;
+    return minStrobes;
 }
         
 PartyAnimation* PartyAnimation::setMinStrobes(uint8_t strobes) {
-    this->minStrobes = strobes;
+    minStrobes = strobes;
     return this;
 }
 
 uint8_t PartyAnimation::getMaxStrobes() {
-    return this->maxStrobes;
+    return maxStrobes;
 }
         
 PartyAnimation* PartyAnimation::setMaxStrobes(uint8_t strobes) {
-    this->maxStrobes = strobes;
+    maxStrobes = strobes;
     return this;
 }
 
 unsigned long PartyAnimation::getMinSleepBetweenStrobes() {
-    return this->minSleepBetweenStrobes;
+    return minSleepBetweenStrobes;
 }
 
 PartyAnimation* PartyAnimation::setMinSleepBetweenStrobes(unsigned long sleep) {
-    this->minSleepBetweenStrobes = sleep;
+    minSleepBetweenStrobes = sleep;
     return this;
 }
 
 unsigned long PartyAnimation::getMaxSleepBetweenStrobes() {
-    return this->maxSleepBetweenStrobes;
+    return maxSleepBetweenStrobes;
 }
         
 PartyAnimation* PartyAnimation::setMaxSleepBetweenStrobes(unsigned long sleep) {
-    this->maxSleepBetweenStrobes = sleep;
+    maxSleepBetweenStrobes = sleep;
     return this;
 }
 
@@ -142,7 +142,7 @@ void PartyAnimation::setAllPixels(uint32_t c) {
 }
 
 void PartyAnimation::doRandomSleep() {
-    double sleepAmount = random(minSleepBetweenStrobes, maxSleepBetweenStrobes) * 1000;
+    unsigned long sleepAmount = random(minSleepBetweenStrobes, maxSleepBetweenStrobes) * 1000;
     delay(sleepAmount);
 }
 

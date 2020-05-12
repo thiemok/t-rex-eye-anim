@@ -7,12 +7,12 @@
 class BlinkAnimation {
 
     public:
-        BlinkAnimation(Adafruit_NeoPixel* pixels);
+        BlinkAnimation(Adafruit_NeoPixel* p);
 
         void setup();
         void loop();
 
-        BlinkAnimation* setNeoPixel(Adafruit_NeoPixel* pixels);
+        BlinkAnimation* setNeoPixel(Adafruit_NeoPixel* p);
 
         unsigned long getMinSleepBetweenBlink();
         BlinkAnimation* setMinSleepBetweenBlink(unsigned long sleep);

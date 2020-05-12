@@ -12,8 +12,8 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "/home/thiemo/Development/t-rex-eye-anim/.pio/build/digispark/firmware.elf",
-            "toolchainBinDir": "/home/thiemo/.platformio/packages/toolchain-atmelavr/bin",
+            "executable": "/home/thiemokrause/Development/t-rex_eye_lighting/.pio/build/d1_mini/firmware.elf",
+            "toolchainBinDir": "/home/thiemokrause/.platformio/packages/toolchain-xtensa/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
                 "task": "Pre-Debug"
@@ -24,8 +24,8 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "/home/thiemo/Development/t-rex-eye-anim/.pio/build/digispark/firmware.elf",
-            "toolchainBinDir": "/home/thiemo/.platformio/packages/toolchain-atmelavr/bin",
+            "executable": "/home/thiemokrause/Development/t-rex_eye_lighting/.pio/build/d1_mini/firmware.elf",
+            "toolchainBinDir": "/home/thiemokrause/.platformio/packages/toolchain-xtensa/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]

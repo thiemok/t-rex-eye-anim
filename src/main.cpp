@@ -3,31 +3,46 @@
 #include "BlinkAnimation.h"
 #include "PartyAnimation.h"
 
-#define P0 0
-#define P1 1
-#define P2 2
-#define P3 3
-#define P4 4
-#define P5 5
+#ifdef ARDUINO_AVR_DIGISPARK
+    #define P0 0
+    #define P1 1
+    #define P2 2
+    #define P3 3
+    #define P4 4
+    #define P5 5
+
+    #define NEO_PIXEL_PIN P0
+    #define NOISE_PIN P2
+    #define SWITCH_PIN P4
+#elif defined(ARDUINO_ESP8266_WEMOS_D1MINI)
+    #define NEO_PIXEL_PIN D2
+    #define NOISE_PIN A0
+    #define SWITCH_PIN D6
+#else
+    #define NEO_PIXEL_PIN 0
+    #define NOISE_PIN 1
+    #define SWITCH_PIN 2
+#endif
 
 #define PIXEL_PER_EYE 4
 
-BlinkAnimation* blink;
-PartyAnimation* party;
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXEL_PER_EYE * 2, NEO_PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXEL_PER_EYE * 2, P0, NEO_GRB + NEO_KHZ800);
+BlinkAnimation blink = BlinkAnimation(&pixels);
+PartyAnimation party = PartyAnimation(&pixels);
+
 
 void seedRNG() {
-    pinMode(P2, INPUT);
-    randomSeed(analogRead(P2));
+    pinMode(NOISE_PIN, INPUT);
+    randomSeed(analogRead(NOISE_PIN));
 }
 
 void setupModeSwitch() {
-    pinMode(P4, INPUT);
+    pinMode(SWITCH_PIN, INPUT);
 }
 
 bool isPartyMode() {
-    return digitalRead(P4) == LOW;
+    return digitalRead(SWITCH_PIN) == LOW;
 }
 
 void setup() {
@@ -44,29 +59,27 @@ void setup() {
     pixels.setBrightness(128);
     pixels.show();
 
-    blink = BlinkAnimation(&pixels)
-        .setMinSleepBetweenBlink(2)
+    blink.setMinSleepBetweenBlink(2)
         ->setMaxSleepBetweenBlink(20)
         ->setEyeColor(pixels.Color(128, 0, 0))
         ->setStepDelay(55);
 
-    party = PartyAnimation(&pixels)
-        .setStepDelay(100)
+    party.setStepDelay(100)
         ->setMinSleepBetweenStrobes(2)
         ->setMaxSleepBetweenStrobes(10);
     
 
     if (isPartyMode()) {
-        party->setup();
+        party.setup();
     } else {
-        blink->setup();
+        blink.setup();
     }
 }
 
 void loop() {
     if (isPartyMode()) {
-        party->loop();
+        party.loop();
     } else {
-        blink->loop();
+        blink.loop();
     }
 }

@@ -19,13 +19,13 @@
     #define EYE_RIGHT 1
 #endif
 
-BlinkAnimation::BlinkAnimation(Adafruit_NeoPixel* pixels) {
-    this->pixels = pixels;
+BlinkAnimation::BlinkAnimation(Adafruit_NeoPixel* p) {
+    pixels = p;
 
-    this->minSleepBetweenBlink = DEFAULT_MIN_SLEEP_BETWEEN_ANIM;
-    this->maxSleepBetweenBlink = DEFAULT_MAX_SLEEP_BETWEEN_ANIM;
-    this->eyeColor = pixels->Color(255, 255, 255);
-    this->animStepDelay = DEFAULT_ANIM_STEP_DELAY;
+    minSleepBetweenBlink = DEFAULT_MIN_SLEEP_BETWEEN_ANIM;
+    maxSleepBetweenBlink = DEFAULT_MAX_SLEEP_BETWEEN_ANIM;
+    eyeColor = pixels->Color(255, 255, 255);
+    animStepDelay = DEFAULT_ANIM_STEP_DELAY;
 }
 
 void BlinkAnimation::setup() {
@@ -37,19 +37,20 @@ void BlinkAnimation::loop() {
     delay(EYES_CLOSED_DURATION * animStepDelay);
     openEyes();
 
-    doRandomSleep();
+    this->doRandomSleep();
 }
 
-BlinkAnimation* BlinkAnimation::setNeoPixel(Adafruit_NeoPixel* pixels) {
-    this->pixels = pixels;
+BlinkAnimation* BlinkAnimation::setNeoPixel(Adafruit_NeoPixel* p) {
+    pixels = p;
+    return this;
 }
 
 unsigned long BlinkAnimation::getMinSleepBetweenBlink() {
-    return this->minSleepBetweenBlink;
+    return minSleepBetweenBlink;
 }
 
 BlinkAnimation* BlinkAnimation::setMinSleepBetweenBlink(unsigned long sleep) {
-    this->minSleepBetweenBlink = sleep;
+    minSleepBetweenBlink = sleep;
     return this;
 }
 
@@ -58,25 +59,25 @@ unsigned long BlinkAnimation::getMaxSleepBetweenBlink() {
 }
         
 BlinkAnimation* BlinkAnimation::setMaxSleepBetweenBlink(unsigned long sleep) {
-    this->maxSleepBetweenBlink = sleep;
+    maxSleepBetweenBlink = sleep;
     return this;
 }
 
 uint32_t BlinkAnimation::getEyeColor() {
-    return this->eyeColor;
+    return eyeColor;
 }
 
 BlinkAnimation* BlinkAnimation::setEyeColor(uint32_t color) {
-    this->eyeColor = color;
+    eyeColor = color;
     return this;
 }
 
 uint8_t BlinkAnimation::getStepDelay() {
-    return this->animStepDelay;
+    return animStepDelay;
 }
 
 BlinkAnimation* BlinkAnimation::setStepDelay(uint8_t delay) {
-    this->animStepDelay = delay;
+    animStepDelay = delay;
     return this;
 }
 
@@ -154,6 +155,6 @@ void BlinkAnimation::closeEye(uint8_t eye) {
 }
 
 void BlinkAnimation::doRandomSleep() {
-    double sleepAmount = random(minSleepBetweenBlink, maxSleepBetweenBlink) * 1000;
+    unsigned long sleepAmount = random(minSleepBetweenBlink, maxSleepBetweenBlink) * 1000;
     delay(sleepAmount);
 }

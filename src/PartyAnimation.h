@@ -7,12 +7,12 @@
 class PartyAnimation {
 
     public:
-        PartyAnimation (Adafruit_NeoPixel* pixels);
+        PartyAnimation (Adafruit_NeoPixel* p);
 
         void setup();
         void loop();
 
-        PartyAnimation* setNeoPixel(Adafruit_NeoPixel* pixels);
+        PartyAnimation* setNeoPixel(Adafruit_NeoPixel* p);
 
         uint8_t getStepDelay();
         PartyAnimation* setStepDelay(uint8_t delay);
