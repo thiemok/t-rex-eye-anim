@@ -64,9 +64,7 @@ void setup() {
         ->setEyeColor(pixels.Color(128, 0, 0))
         ->setStepDelay(55);
 
-    party.setStepDelay(100)
-        ->setMinSleepBetweenStrobes(2)
-        ->setMaxSleepBetweenStrobes(10);
+    party.setStepDelay(125);
     
 
     if (isPartyMode()) {

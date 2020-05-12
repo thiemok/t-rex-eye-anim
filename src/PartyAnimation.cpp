@@ -9,15 +9,12 @@
 #ifndef DEFAULT_ANIM_MAX_STROBES
     #define DEFAULT_ANIM_MAX_STROBES 5
 #endif
-#ifndef DEFAULT_MIN_SLEEP_BETWEEN_ANIM
-    #define DEFAULT_MIN_SLEEP_BETWEEN_ANIM 1
-#endif
-#ifndef DEFAULT_MAX_SLEEP_BETWEEN_ANIM
-    #define DEFAULT_MAX_SLEEP_BETWEEN_ANIM 5
-#endif
 #ifndef INITIAL_BRIGHTNESS_LOWER_BOUND
     #define INITIAL_BRIGHTNESS_LOWER_BOUND 64
 #endif 
+#ifndef FADE_HEADROOM
+    #define FADE_HEADROOM 4
+#endif
 
 PartyAnimation::PartyAnimation(Adafruit_NeoPixel* p) {
     pixels = p;
@@ -25,8 +22,6 @@ PartyAnimation::PartyAnimation(Adafruit_NeoPixel* p) {
     animStepDelay = DEFAULT_ANIM_STEP_DELAY;
     minStrobes = DEFAULT_ANIM_MIN_STROBES;
     maxStrobes = DEFAULT_ANIM_MAX_STROBES;
-    minSleepBetweenStrobes = DEFAULT_MIN_SLEEP_BETWEEN_ANIM;
-    maxSleepBetweenStrobes = DEFAULT_MAX_SLEEP_BETWEEN_ANIM;
 }
 
 void PartyAnimation::setup() {
@@ -35,28 +30,24 @@ void PartyAnimation::setup() {
 }
 
 void PartyAnimation::loop() {
-uint8_t strobes = selectNumStrobes();
-uint8_t steps = maxStrobes * 2;
-uint8_t stepsPerStrobe = steps / strobes;
+    uint8_t strobes = selectNumStrobes();
+    uint8_t steps = maxStrobes * FADE_HEADROOM;
+    uint8_t stepsPerStrobe = steps / strobes;
 
-uint8_t r = selectInitialColorValue();
-uint8_t g = selectInitialColorValue();
-uint8_t b = selectInitialColorValue();
+    color color = selectInitialColor();
 
-for (uint8_t i = 0; i < steps; i++) {
-    uint8_t partial = i % stepsPerStrobe;
-    if (partial == 0) {
-        setAllPixels(pixels->Color(r, g, b));
-    } else {
-        setAllPixels(
-            fadeColor(r, g, b, partial, stepsPerStrobe)
-        );
+    for (uint8_t i = 0; i < steps; i++) {
+        uint8_t partial = i % stepsPerStrobe;
+        if (partial == 0) {
+            setAllPixels(pixels->Color(color.r, color.g, color.b));
+        } else {
+            setAllPixels(
+                fadeColor(color, partial, stepsPerStrobe)
+            );
+        }
+        pixels->show();
+        delay(animStepDelay);
     }
-    pixels->show();
-    delay(animStepDelay);
-}
-
-doRandomSleep();
 }
 
 PartyAnimation* PartyAnimation::setNeoPixel(Adafruit_NeoPixel* p) {
@@ -91,42 +82,29 @@ PartyAnimation* PartyAnimation::setMaxStrobes(uint8_t strobes) {
     return this;
 }
 
-unsigned long PartyAnimation::getMinSleepBetweenStrobes() {
-    return minSleepBetweenStrobes;
-}
-
-PartyAnimation* PartyAnimation::setMinSleepBetweenStrobes(unsigned long sleep) {
-    minSleepBetweenStrobes = sleep;
-    return this;
-}
-
-unsigned long PartyAnimation::getMaxSleepBetweenStrobes() {
-    return maxSleepBetweenStrobes;
-}
-        
-PartyAnimation* PartyAnimation::setMaxSleepBetweenStrobes(unsigned long sleep) {
-    maxSleepBetweenStrobes = sleep;
-    return this;
-}
-
 uint8_t PartyAnimation::selectNumStrobes() {
     return random(minStrobes, maxStrobes);
 }
 
-uint8_t PartyAnimation::selectInitialColorValue() {
-    return random(INITIAL_BRIGHTNESS_LOWER_BOUND, 255);
+color PartyAnimation::selectInitialColor() {
+    color c;
+
+    c.r = random(0, 255);
+    c.g = random(0, 255 - c.r);
+    c.b = 255 - (c.r + c.g);
+
+    
+    return c;
 }
 
 uint32_t PartyAnimation::fadeColor(
-    uint8_t initialR,
-    uint8_t initialG,
-    uint8_t initialB,
+    color color,
     uint8_t step,
     uint8_t totalSteps) {
         return pixels->Color(
-            fadeValue(initialR, step, totalSteps),
-            fadeValue(initialG, step, totalSteps),
-            fadeValue(initialB, step, totalSteps)
+            fadeValue(color.r, step, totalSteps),
+            fadeValue(color.g, step, totalSteps),
+            fadeValue(color.b, step, totalSteps)
         );
     }
 
@@ -140,9 +118,3 @@ void PartyAnimation::setAllPixels(uint32_t c) {
     }
     
 }
-
-void PartyAnimation::doRandomSleep() {
-    unsigned long sleepAmount = random(minSleepBetweenStrobes, maxSleepBetweenStrobes) * 1000;
-    delay(sleepAmount);
-}
-
